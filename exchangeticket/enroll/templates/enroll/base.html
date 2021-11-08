@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Ticket Market Web</title>
+		<link rel="stylesheet" href="{% static 'enroll/css/bootstrap.css' %}" />
+		<link
+			href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp"
+			rel="stylesheet"
+		/>
+	</head>
+	<body>
+		  
+		<header class="wrapper">
+			<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+				<div class="container">
+					<a style="display: flex; align-items: center;" class="navbar-brand" href="#">
+					
+						 <span class="material-icons" style="margin-right: 15px; font-size: 30px; color: yellow;">
+							local_activity
+							</span>
+							
+					 Ticket Market </a>
+					<div class="collapse navbar-collapse" style="justify-content: center !important;" id="navbarText">
+				<a class="navbar-brand mb-0 h1" href="{% url 'homepage'%}"">All Ticket</a>
+				
+				
+				<a class="navbar-brand mb-0 h1" href="{% url 'addandshow'%}"">My Ticket</a>
+				{% if user.is_authenticated %}
+				
+					<form action="{% url 'accounts:logout' %} " method="POST">
+						{% csrf_token %}
+						<button style="border: unset;" class="navbar-brand mb-0 h1 bg-primary" type="submit">Logout</button>
+					</form>
+				
+				{% else %}
+				<a class="navbar-brand mb-0 h1" href="{% url 'accounts:login' %}">Login</a>
+				<a class="navbar-brand mb-0 h1" href="{% url 'accounts:signup' %}">Signup</a>
+				{% endif %}
+				</div>
+				<form class="d-flex">
+					<input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+					<button class="btn btn-success"  type="submit">Search</button>
+				  </form>
+				</div>	
+			</nav>
+		</header>
+		<div class="container mt-5">
+			{% block content %} {% endblock content %}
+		</div>
+		<script src="{% static 'enroll/js/jquery.js' %}"></script>
+		<script src="{% static 'enroll/js/popper.js' %}"></script>
+		<script src="{% static 'enroll/js/bootstrap.js' %}"></script>
+	</body>
+</html>
