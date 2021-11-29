@@ -1,0 +1,53 @@
+{% extends 'enroll/base.html' %} {% block content %} {% load cart_tag %}
+<div>
+	<table class="table table-hover">
+		{% if request.session.cart|length == 0 %}
+		<h4 class="text-center alert alert-warning">Cart is Empty</h4>
+		{% else %}
+		<thead>
+			<tr>
+				<th scope="col">Name</th>
+				<th scope="col">Ticket No</th>
+				<th scope="col">Category</th>
+				<th scope="col">Quality</th>
+				<th scope="col">Price</th>
+				<th scope="col">Image</th>
+				<th scope="col">Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for key,value in request.session.cart.items %}
+			<tr>
+				<th scope="row">{{value.name}}</th>
+				<th scope="row">{{value.desc}}</th>
+				<th scope="row">{{value.category}}</th>
+				<th scope="row">{{value.quantity}}</th>
+				<th scope="row">{{value.price}}</th>
+
+				<th scope="row">
+					<div
+						style="
+							width: 50px;
+							height: 50px;
+							display: flex;
+							align-items: center;
+						"
+					>
+						<img style="width: 100%" src="{{value.image}}" alt="" />
+					</div>
+				</th>
+				<th scope="col">
+					<a href="{% url 'item_clear' key %}">Remove</a>
+				</th>
+			</tr>
+			{% endfor %}
+		</tbody>
+		Total Length : {{request.session.cart|length}}
+
+		<th scope="col">
+			<a href="{% url 'cart_clear' %}">Remove All</a>
+		</th>
+		{%endif%}
+	</table>
+</div>
+{% endblock content %}

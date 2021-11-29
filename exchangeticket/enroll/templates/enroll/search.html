@@ -1,0 +1,66 @@
+{% extends 'enroll/base.html' %} {% load static %} {% block content %}
+<main class="container my-4">
+	<!-- Featured Products -->
+	<h3 class="my-4 border-bottom pb-1 text-capitalize" style="color: #ab003c"
+		><span class="text-muted">Search result for: </span> {{request.GET.q}}</h3
+	>
+	<div class="row" style="justify-content: center">
+		{% for st in data %}
+		<div
+			class="card mb-3"
+			style="width: 500px; display: flex; margin-right: 16px"
+		>
+			<div class="row g-0" style="padding-left: 10px">
+				<div class="col-md-4" style="display: flex; align-items: center">
+					<img
+						src="http://127.0.0.1:8000/myticket/{{st.thumnail}}"
+						class="img-fluid rounded-start"
+						alt=""
+					/>
+				</div>
+				<div class="col-md-8">
+					<div
+						class="card-body text-capitalize text-secondary"
+						style="font-weight: 500"
+					>
+						<a
+							href="{{st.get_absolute_url}}"
+							style="text-decoration: unset; color: unset"
+						>
+							<h5 class="card-title" style="color: #ab003c"
+								>Seller: {{st.name}}</h5
+							>
+							<p class="card-text" style="color: #1769aa; font-weight: 500"
+								>Ticket Type: {{st.category}}
+							</p>
+							<p class="card-text text-secondary" style="font-weight: 500"
+								>Ticket No: {{st.desc}}</p
+							>
+							<p class="card-text"
+								>Quality:
+								<small class="text-muted"> {{st.quality}} </small>
+							</p>
+							<p class="card-text"
+								>Price:
+								<small class="text-muted"> {{st.price}}$ </small>
+							</p>
+							<p class="card-text">
+								Time Public:<small class="text-muted">
+									{{st.time_pub}}</small
+								></p
+							>
+						</a>
+						<a
+							href="{% url 'cart_add' st.id %} "
+							class="btn btn-success"
+							style="margin-top: 5px"
+							>Add to cart</a
+						>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</main>
+{% endblock %}

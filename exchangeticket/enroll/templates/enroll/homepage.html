@@ -1,37 +1,115 @@
 {% extends 'enroll/base.html' %} {% block content %}
 
-<div
-	class="content"
-	style="
-		display: flex;
-		justify-content: space-evenly;
-		flex-direction: row;
-		flex-wrap: wrap;
-	"
->
-	{% for st in stu %}
-	<div class="card mb-3" style="max-width: 540px; display: flex">
-		<div class="row g-0">
-			<div class="col-md-4" style="display: flex; align-items: center">
-				<img
-					src="http://127.0.0.1:8000/myticket/{{st.thumnail}}"
-					class="img-fluid rounded-start"
-					alt=""
-				/>
+<div class="content" style="font-family: 'Roboto'">
+	<div class="row row-cols-2" style="flex-wrap: nowrap">
+		<div class="col" style="width: 300px">
+			<h3 style="font-size: 25px">Ticket Category</h3>
+			<div style="display: flex; flex-direction: column">
+				{% for st in data %}
+				<a
+					class="text-capitalize"
+					href="?categories={{st.id}}"
+					style="
+						text-decoration: unset;
+						font-size: 25px;
+						padding-top: 10px;
+						color: #1769aa;
+					"
+					>{{st.title}}</a
+				>
+				{% endfor %}
 			</div>
-			<div class="col-md-8">
-				<div class="card-body">
-					<h5 class="card-title">Seller: {{st.name}}</h5>
-					<p class="card-text">Ticket No: {{st.desc}}</p>
-					<p class="card-text">Quality: {{st.quality}}</p>
-					<p class="card-text">Price: {{st.price}}$</p>
-					<p class="card-text"
-						><small class="text-muted">Time Public: {{st.time_pub}}</small></p
-					>
+		</div>
+		<div
+			class="col"
+			style="
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				width: 85%;
+				padding-bottom: 5px;
+			"
+		>
+			{% for st in page.object_list %}
+			<div
+				class="card mb-3"
+				style="width: 500px; display: flex; margin-right: 16px"
+			>
+				<div class="row g-0" style="padding-left: 10px">
+					<div class="col-md-4" style="display: flex; align-items: center">
+						<img
+							src="http://127.0.0.1:8000/myticket/{{st.thumnail}}"
+							class="img-fluid rounded-start"
+							alt=""
+						/>
+					</div>
+					<div class="col-md-8">
+						<div
+							class="card-body text-capitalize text-secondary"
+							style="font-weight: 500"
+						>
+							<a
+								href="{{st.get_absolute_url}}"
+								style="text-decoration: unset; color: unset"
+							>
+								<h5 class="card-title" style="color: #ab003c"
+									>Seller: {{st.name}}</h5
+								>
+								<p class="card-text" style="color: #1769aa; font-weight: 500"
+									>Ticket Type: {{st.category}}
+								</p>
+								<p class="card-text text-secondary" style="font-weight: 500"
+									>Ticket No: {{st.desc}}</p
+								>
+								<p class="card-text"
+									>Quality:
+									<small class="text-muted"> {{st.quality}} </small>
+								</p>
+								<p class="card-text"
+									>Price:
+									<small class="text-muted"> {{st.price}}$ </small>
+								</p>
+								<p class="card-text">
+									Time Public:<small class="text-muted">
+										{{st.time_pub}}</small
+									></p
+								>
+							</a>
+							<a
+								href="{% url 'cart_add' st.id %} "
+								class="btn btn-success"
+								style="margin-top: 5px"
+								>Add to cart</a
+							>
+						</div>
+					</div>
 				</div>
+			</div>
+			{% endfor %}
+			<div
+				class="page-links"
+				style="
+					width: 92.5%;
+					display: flex;
+					justify-content: space-between;
+					align-items: flex-start;
+				"
+			>
+				{% if page.has_previous %}
+				<a
+					href="{% url 'homepage' %}?page={{ page.previous_page_number }}"
+					class="btn btn-secondary"
+					>Previous Page</a
+				>
+				{% endif %} {% if page.has_next %}
+				<a
+					href="{% url 'homepage' %}?page={{ page.next_page_number }}"
+					class="btn btn-secondary"
+					>Next Page</a
+				>
+				{% endif %}
 			</div>
 		</div>
 	</div>
-	{% endfor %}
 </div>
 {% endblock content %}

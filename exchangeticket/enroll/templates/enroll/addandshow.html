@@ -18,6 +18,7 @@
 				<tr>
 					<th scope="col">Name</th>
 					<th scope="col">Ticket No</th>
+					<th scope="col">Category</th>
 					<th scope="col">Quality</th>
 					<th scope="col">Price</th>
 					<th scope="col">Image</th>
@@ -26,12 +27,14 @@
 				</tr>
 			</thead>
 			<tbody>
-				{% for st in stu %}
+				{% for st in stu %} {% if st.author == request.user %}
 				<tr>
 					<th scope="row">{{st.name}}</th>
 					<th scope="row">{{st.desc}}</th>
+					<th scope="row">{{st.category}}</th>
 					<th scope="row">{{st.quality}}</th>
 					<th scope="row">{{st.price}}</th>
+
 					<th scope="row">
 						<div
 							style="
@@ -45,6 +48,7 @@
 						</div>
 					</th>
 					<th scope="row">{{st.time_pub}}</th>
+
 					<td scope="row">
 						<a
 							href="{% url 'updatedata' st.id %}"
@@ -61,7 +65,7 @@
 						</form>
 					</td>
 				</tr>
-				{% endfor %}
+				{% endif %} {% endfor %}
 			</tbody>
 		</table>
 		{% else %}

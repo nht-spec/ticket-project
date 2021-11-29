@@ -1,0 +1,162 @@
+{% extends 'enroll/base.html' %} {% block content %}
+
+<div
+	class="content"
+	style="font-family:'Roboto'; font-weight: 500;"
+>
+<div class="card mb-3" style="height: 450px; " >
+	<div class="row g-0" style="justify-content:space-around">
+	  <div class="col-md-4" style="display: flex; align-items: center; width: 350px; margin-left: 80px;">
+		<img
+		src="http://127.0.0.1:8000/myticket/{{data.thumnail}}"
+		style="width: 100%; object-fit: cover;"
+		alt=""
+	/>
+	  </div>
+	  <div class="col-md-8" style="padding-top: 40px; padding-left: 100px;">
+		<div class="card-body text-capitalize" >
+			<h2 class="card-title" style="color: #ab003c;padding-bottom: 20px;">Seller: {{data.name}}
+				</h2>
+			<h3 class="card-text text-secondary" style="padding-bottom: 20px;">Ticket No: 
+				<small class="text-muted">
+					{{data.desc}}
+				</small>
+				</h3>
+			<h4 class="card-text text-secondary" style="padding-bottom: 20px;">Quality: 
+				<small class="text-muted">
+					{{data.quality}}
+				</small>
+			</h4>
+			<h4 class="card-text text-secondary" style="padding-bottom: 20px;">
+				Price:
+				<small class="text-muted">
+				 {{data.price}}$	
+				</small>
+			</h4>
+			<h4 class="card-text text-secondary" style="padding-bottom: 20px";
+						>
+						Time Public: <small class="text-muted">{{data.time_pub}}</small>
+			</h4>
+			<a
+			href="{% url 'cart_add' data.id %} "
+			class="btn btn-success"
+			style="margin-top: 5px"
+			>Add to cart
+		</a>
+			</div>
+		</div>
+	  </div>
+	</div>
+  </div>
+	<!-- Reviews -->
+	<div class="col-md-6" style="max-width: 100% !important; width: 100%; margin-top: 20px; font-family:'Roboto'; font-weight: 500; padding-left: unset !important;">
+		<h3 class="my-3"
+			>Reviews - <span class="avg-rating">{{avg_reviews.avg_rating}}</span>/5
+			<i class="fa fa-star text-warning"></i>
+			{% if user.is_authenticated %} {% if canAdd %}
+			<button
+			style="font-size: 20px"
+				data-toggle="modal"
+				data-target="#productReview"
+				type="button"
+				class="btn btn-warning btn-sm float-right reviewBtn"
+				>Add Review</button
+			>
+			{% endif %} {% endif %}
+		</h3>
+		{% if user.is_authenticated %}
+		<!-- Product Review -->
+		<div
+			class="modal fade"
+			id="productReview"
+			tabindex="-1"
+			aria-labelledby="exampleModalLabel"
+			aria-hidden="true"
+		>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel"
+							>Add Product Review</h5
+						>
+						<button
+							type="button"
+							class="close"
+							data-dismiss="modal"
+							aria-label="Close"
+						>
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form
+							method="post"
+							id="addForm"
+							action="{% url 'save-review' data.id %}"
+						>
+							{% csrf_token %}
+							<table class="table table-bordered">
+								{% if canAdd %}
+								{{form.as_table}}
+								<tr>
+									<td colspan="2">
+										<button type="submit" class="btn btn-primary"
+											>Submit</button
+										>
+										<input
+											type="reset"
+											class="btn btn-dark"
+											value="Reset"
+											id="reset"
+										/>
+									</td>
+								</tr>
+								{% endif %}
+							</table>
+							<p class="ajaxRes"></p>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+		<!-- Product Review End -->
+		<div style="display: flex; flex-wrap: wrap;">
+			{% if reviews %}
+			{% for review in reviews %}
+			<div style="width: 50%;" >
+				<div class="col-sm-7" style="width: 100% !important; max-width: 100% !important; padding-left: unset;">	
+					<div class="review-block">
+						<div class="row">
+							<div class="col-sm-3">
+								<img src="http://dummyimage.com/60x60/666/ffffff&text=No+Image" class="img-rounded">
+								<div class="review-block-name text-capitalize text-info" style="padding-top: 10px; font-size: 20px;"><p>{{review.user}}</p></div>
+							   
+							</div>
+							<div class="col-sm-9">
+								<div class="review-block-rate" style="font-size: 20px; padding-bottom: 10px;">
+								  {% for star in review.review_rating|ljust:review.review_rating %}
+							<i class="fa fa-star text-warning"></i>
+						  {% endfor %}
+								</div>
+								<div class="review-block-title text-success" style="font-size: 20px;">{{review.review_text}}</div>			 
+							</div>
+						</div>
+					</div>
+				</div>
+				<hr/>
+			</div>
+			{% endfor %}
+			{% else %}
+				<p class="no-data">Add First Review</p>
+			{% endif %}
+		</div>
+			  
+		  </div> <!-- /container -->
+
+
+	</div>
+	</div>
+	</div>
+	{% endblock content %}
+</div>
