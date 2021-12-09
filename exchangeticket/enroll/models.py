@@ -3,6 +3,7 @@ from django.db.models.base import Model
 from django.utils import timezone
 from django.contrib.auth.models import User 
 from django.urls import reverse
+# from django.utils.html import mark_safe
 
 # Create your models here.
 class Category(models.Model):
@@ -12,10 +13,11 @@ class Category(models.Model):
         return self.title
 
 
-        
+  
 class Ticket(models.Model):
     name = models.CharField(max_length=100)
     desc = models.CharField(max_length=100)
+    email = models.CharField(max_length=100, blank=True, null=True, default=None)
     category = models.ForeignKey(Category,on_delete=models.CASCADE, blank=True, null=True, default=None)
     thumnail =  models.ImageField(default="upload.png", blank=True)
     quality = models.IntegerField(default=0)
@@ -31,6 +33,8 @@ class Ticket(models.Model):
         
     def get_absolute_url(self):
         return reverse('ticket_detail',args=[self.id,])
+
+  
         
 RATING=(
     (1,'1'),

@@ -1,14 +1,16 @@
 from django import forms
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import HttpResponseRedirect, render,redirect
+from django.shortcuts import HttpResponseRedirect, render, redirect
 from django.db.models import Avg
 from django.http import JsonResponse
 from cart.cart import Cart
 from django.core.paginator import Paginator
+from .forms import TicketRegistration, ReviewAdd
+from .models import Category, Ticket, TicketReview
+from django.core.mail import EmailMessage, message
+from django.conf import settings
+from django.template.loader import render_to_string
 from . import forms
-from .forms import TicketRegistration,ReviewAdd
-from .models import  Category, Ticket,TicketReview
-
 
 def home_page(request):
     category = Category.objects.all()
@@ -17,80 +19,87 @@ def home_page(request):
 
     if CATID:
         stud = Ticket.objects.filter(category=CATID)
-        ticket_paginator = Paginator(stud,12)
+        ticket_paginator = Paginator(stud, 12)
         page_num = request.GET.get('page')
         page = ticket_paginator.get_page(page_num)
     else:
-        ticket_paginator = Paginator(stud,6)
+        ticket_paginator = Paginator(stud, 4)
         page_num = request.GET.get('page')
         page = ticket_paginator.get_page(page_num)
-   
-    context = {
-    'count': ticket_paginator.count,
-    'page':page,
-    'data':category,
-    }
-    return render(request, 'enroll/homepage.html',context)
 
-@login_required(login_url="/accounts/login/")  
+    context = {
+        'count': ticket_paginator.count,
+        'page': page,
+        'data': category,
+    }
+
+    return render(request, 'enroll/homepage.html', context)
+
+
+@login_required(login_url="/accounts/login/")
 def add_show(request):
     if request.method == 'POST':
-     fm = forms.TicketRegistration(request.POST,request.FILES)
-     if fm.is_valid():
-        instance = fm.save(commit=False)
-        instance.author = request.user
-        instance.save()
-     fm = TicketRegistration()
+        fm = forms.TicketRegistration(request.POST, request.FILES)
+        if fm.is_valid():
+            instance = fm.save(commit=False)
+            instance.author = request.user
+            instance.save()
+        fm = TicketRegistration()
     else:
-     fm = TicketRegistration()
+        fm = TicketRegistration()
     stud = Ticket.objects.all()
-    return render(request, 'enroll/addandshow.html', {'form':fm, 
-    'stu':stud})
+    return render(request, 'enroll/addandshow.html', {'form': fm,
+                                                      'stu': stud})
+
 
 def update_data(request, id):
     if request.method == 'POST':
         pi = Ticket.objects.get(pk=id)
-        fm = TicketRegistration(request.POST,request.FILES, instance=pi)
+        fm = TicketRegistration(request.POST, request.FILES, instance=pi)
         if fm.is_valid():
-         fm.save()
+            fm.save()
     else:
         pi = Ticket.objects.get(pk=id)
         fm = TicketRegistration(instance=pi)
-    return render(request, 'enroll/updateticket.html', {'form':fm})
+    return render(request, 'enroll/updateticket.html', {'form': fm})
+
 
 def delete_data(request, id):
     if request.method == 'POST':
-       pi = Ticket.objects.get(pk=id)
-       pi.delete()
-       return HttpResponseRedirect('/myticket')
+        pi = Ticket.objects.get(pk=id)
+        pi.delete()
+        return HttpResponseRedirect('/myticket')
+
 
 def enroll_create(request):
-    return render(request,'enroll/enroll_create.html')
+    return render(request, 'enroll/enroll_create.html')
 
 
-@login_required(login_url="/accounts/login/")  
-def ticket_detail(request,id):
+@login_required(login_url="/accounts/login/")
+def ticket_detail(request, id):
     stud = Ticket.objects.get(id=id)
     ticket = Ticket.objects.get(id=id)
 
-    
     reviewForm = ReviewAdd()
-    
-    canAdd=True
-    reviewCheck=TicketReview.objects.filter(user=request.user,ticket=ticket).count()
+
+    canAdd = True
+    reviewCheck = TicketReview.objects.filter(
+        user=request.user, ticket=ticket).count()
     if request.user.is_authenticated:
         if reviewCheck > 0:
-            canAdd=False
-	# End
-    reviews=TicketReview.objects.filter(ticket=ticket)
-    avg_reviews=TicketReview.objects.filter(ticket=ticket).aggregate(avg_rating= Avg('review_rating'))
+            canAdd = False
+        # End
+    reviews = TicketReview.objects.filter(ticket=ticket)
+    avg_reviews = TicketReview.objects.filter(
+        ticket=ticket).aggregate(avg_rating=Avg('review_rating'))
 
-    return render(request,'enroll/ticket_detail.html', {'data':stud,'form':reviewForm,'canAdd':canAdd,'reviews':reviews,'avg_reviews':avg_reviews})
+    return render(request, 'enroll/ticket_detail.html', {'data': stud, 'form': reviewForm, 'canAdd': canAdd, 'reviews': reviews, 'avg_reviews': avg_reviews})
+
 
 def search(request):
-    q=request.GET['q']
+    q = request.GET['q']
     data = Ticket.objects.filter(name=q,).order_by('-id')
-    return render(request,'enroll/search.html',{'data':data})
+    return render(request, 'enroll/search.html', {'data': data})
 
 
 @login_required(login_url="/accounts/login/")
@@ -137,19 +146,34 @@ def cart_detail(request):
     return render(request, 'enroll/cart_detail.html')
 
 
-def save_review(request,pid):
-    ticket=Ticket.objects.get(pk=pid)
-    user= request.user
-    review= TicketReview.objects.create(
+def save_review(request, pid):
+    ticket = Ticket.objects.get(pk=pid)
+    user = request.user
+    review = TicketReview.objects.create(
         user=user,
         ticket=ticket,
         review_text=request.POST['review_text'],
         review_rating=request.POST['review_rating'],
     )
-    data={
-        'user':user.username,
-        'review_text':request.POST['review_text'],
-        'review_rating':request.POST['review_rating'],
+    data = {
+        'user': user.username,
+        'review_text': request.POST['review_text'],
+        'review_rating': request.POST['review_rating'],
     }
-    return JsonResponse({'bool':True,'data':data})
-    
+    return JsonResponse({'bool': True, 'data': data})
+
+@login_required(login_url="/accounts/login/")
+def contact(request ,id):
+    data = Ticket.objects.get(id=id)
+    template = render_to_string('enroll/email.html',{'name':data.name,'email':request.user.email,'desc':data.desc,'category':data.category,'quality':data.quality,'price':data.price,'time_pub':data.time_pub})
+
+    email = EmailMessage(
+        'Request to buy products from ticket market!',
+        template,
+        settings.EMAIL_HOST_USER,
+        [data.email]
+    )
+    email.fail_silently=False
+    email.send()
+
+    return redirect("homepage")

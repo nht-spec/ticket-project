@@ -75,12 +75,20 @@
 									></p
 								>
 							</a>
-							<a
-								href="{% url 'cart_add' st.id %} "
-								class="btn btn-success"
-								style="margin-top: 5px"
-								>Add to cart</a
-							>
+							<div>
+								<a
+									href="{% url 'cart_add' st.id %}"
+									class="btn btn-success"
+									style="margin-top: 5px"
+									>Add to cart
+								</a>
+								<a
+									href="{% url 'contact' st.id %}"
+									class="btn btn-warning"
+									style="margin-top: 5px; margin-left: 10px"
+									>Buy Now</a
+								>
+							</div>
 						</div>
 					</div>
 				</div>

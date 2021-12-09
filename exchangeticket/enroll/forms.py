@@ -8,9 +8,10 @@ from .models import Ticket,TicketReview
 class TicketRegistration(forms.ModelForm):
     class Meta:
         model = Ticket
-        fields = ['name','desc','category','thumnail','quality','price','time_pub']
+        fields = ['name','desc','email','category','thumnail','quality','price','time_pub']
         widgets = {
             'name': forms.TextInput(attrs={'class':'form-control'}),
+            'email': forms.TextInput(attrs={'class':'form-control'}),
             'desc': forms.TextInput(attrs={'class':'form-control'}),
             'category': forms.Select(attrs={'class':'form-control'}),
             'quality': forms.NumberInput(attrs={'class':'form-control'}),

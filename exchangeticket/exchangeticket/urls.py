@@ -25,12 +25,12 @@ urlpatterns = [
     path('accounts/',include('accounts.urls')),
     path('admin/', admin.site.urls),
     path('', views.home_page , name="homepage"),
+    path('contact/<int:id>/', views.contact , name="contact"),
     path('search', views.search , name="search"),
     path('myticket/', views.add_show, name="addandshow"),
     path('delete/<int:id>/',views.delete_data, name="deletedata"),
     path('<int:id>/',views.update_data, name="updatedata"),
     path('ticket/<int:id>/',views.ticket_detail,name='ticket_detail'),
-    
     path('cart/add/<int:id>/', views.cart_add, name='cart_add'),
     path('cart/item_clear/<int:id>/', views.item_clear, name='item_clear'),
     path('cart/item_increment/<int:id>/',
